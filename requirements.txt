@@ -4,3 +4,6 @@ Flask-SQLAlchemy
 Jinja2
 SQLAlchemy
 psycopg2
+requests
+pyopenssl
+ndg-httpsclient

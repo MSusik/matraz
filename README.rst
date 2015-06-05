@@ -3,11 +3,11 @@ Installation
 
 Firstly, install postgreSQL and create a DB. Then, write in your terminal:
 
-.. code-block :: pycon
+.. code-block :: bash
 
-    >>> pip install -r requirements.txt
-    >>> export DATABASE_URL="postgresql:///[name]"
-    >>> export APP_SETTINGS="config.Config"
+    $ pip install -r requirements.txt
+    $ export DATABASE_URL="postgresql:///[name]"
+    $ export APP_SETTINGS="config.Config"
 
 To create the tables, enter python and type:
 

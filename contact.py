@@ -34,7 +34,7 @@ def get_contact_for_user(owner):
 def get_contact_for_org(owner, repo_info):
 
     if repo_info:
-        if not repo_info['has_issues']:
+        if repo_info['has_issues']:
             contact = 'https://github.com/' + owner + '/' + repo + '/issues'
             return contact
         else:
