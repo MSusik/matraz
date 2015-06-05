@@ -23,16 +23,13 @@ def get_doi(repo_url, access_token):
 
     try:
         response.raise_for_status()
-    except requests.exception.RequestException:
+    except requests.exceptions.RequestException:
         return '', ''
 
     content = response.json()
 
     for upload in content:
         try:
-            print repo_url
-            print upload['metadata']['related_identifiers'][0]['identifier'].lower()
-            print upload['metadata']['related_identifiers'][0]['identifier'].lower().startswith(repo_url)
             if any(x['identifier'].lower().startswith(repo_url.lower())
                    for x in upload['metadata']['related_identifiers']):
                 return upload['doi'], upload['doi_url']

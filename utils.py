@@ -10,7 +10,6 @@ def get_repo_info(owner, repo):
         r.raise_for_status()
         j = r.json()
     except requests.exceptions.RequestException:
-        print r.status_code
         return {}
 
     return j

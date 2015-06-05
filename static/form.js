@@ -11,6 +11,7 @@ $( document ).ready(function() {
         put_info('contact', current_message['contact']);
         put_info('doi', current_message['doi'][0]);
         put_info('license', current_message['license'][0]);
+        put_info('docs', current_message['documentation'])
     });
 
     var put_info = function(id, content){
@@ -27,7 +28,12 @@ $( document ).ready(function() {
         $('.fa-2x').removeClass("circle-o-notch fa-check fa-remove");
         $('.fa-2x').addClass("fa-spinner fa-spin");
         // Here all the websocket thingies will be done!
-        socket.emit('get_info', {repo: repo, owner: owner, token: token});
+        socket.emit('get_info', {
+            repo: repo,
+            owner: owner,
+            token: token,
+            refresh: true
+        });
     };
 
     var split_uri = function() {
@@ -51,5 +57,10 @@ $( document ).ready(function() {
     });
 
     split_uri();
+    socket.emit('get_info', {
+        repo: repo,
+        owner: owner,
+        token: null,
+    });
 
 });
