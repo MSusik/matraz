@@ -5,6 +5,7 @@ from flask.ext.socketio import SocketIO, emit
 from flask.ext.sqlalchemy import SQLAlchemy
 
 from contact import get_contact
+from docs import has_docs
 from doi import get_doi
 from license import get_license
 from utils import get_repo_info
@@ -48,13 +49,14 @@ def get_info(message):
     if message["token"] is None:
         return
 
+    readme = get_readme(message["owner"], message["repo"])
     repo_info = get_repo_info(message["owner"], message["repo"])
     return_message = {
-        "contact": get_contact(message["owner"], repo_info),
+        "contact": get_contact(message["owner"], repo_info, readme),
         "license": get_license(message["owner"], repo_info),
         "doi": get_doi('https://github.com/%s/%s' % (message["owner"],
                        message["repo"]), message["token"]),
-        "documentation": False
+        "documentation": has_docs(message["owner"], message["repo"], readme)
     }
 
     if not current_owner:

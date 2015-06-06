@@ -41,17 +41,18 @@ def get_contact_for_org(owner, repo_info):
             import re
 
             EMAIL_REGEX = re.compile('[^@\s]+@[^@\s]+\.[^@\s]+')
-            first_email = EMAIL_REGEX.search(get_readme(owner, repo))
+            first_email = EMAIL_REGEX.search(readme)
 
             if first_email:
-                return first_email.string[first_email.start():first_email.end()]
+                return first_email.string[first_email.start():
+                                          first_email.end()]
             else:
                 return ""
     return ""
 
 
-def get_contact(owner, repo_info):
+def get_contact(owner, repo_info, readme):
     user_contact = get_contact_for_user(owner)
     if user_contact:
         return user_contact
-    return get_contact_for_org(owner, repo_info)
+    return get_contact_for_org(owner, repo_info, readme)
