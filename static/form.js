@@ -11,11 +11,14 @@ $( document ).ready(function() {
         put_info('contact', current_message['contact']);
         put_info('doi', current_message['doi'][0]);
         put_info('license', current_message['license'][0]);
-        put_info('docs', current_message['documentation'])
+        if(current_message['documentation'])
+            put_info('docs', "Available");
+        else
+            put_info('docs', null);
     });
 
     var put_info = function(id, content){
-        $('.fa-' + id).removeClass('fa-spin fa-spinner fa-check circle-o-notch');
+        $('.fa-' + id).removeClass('fa-spin fa-spinner fa-check');
         if(content){
             $('.fa-' + id).addClass('fa-check');
             $( "input#" + id ).val(content);
@@ -24,14 +27,16 @@ $( document ).ready(function() {
         }
     }
 
-    var reload_triggers = function(token) {
-        $('.fa-2x').removeClass("circle-o-notch fa-check fa-remove");
+    var reload_triggers = function() {
+        $('.fa-2x').removeClass("fa-check fa-remove");
         $('.fa-2x').addClass("fa-spinner fa-spin");
-        // Here all the websocket thingies will be done!
+        $("input#contact").val("")
+        $("input#doi").val("")
+        $("input#license").val("")
+        $("input#docs").val("")
         socket.emit('get_info', {
             repo: repo,
             owner: owner,
-            token: token,
             refresh: true
         });
     };
@@ -49,18 +54,17 @@ $( document ).ready(function() {
     $('[data-toggle="tooltip"]').tooltip();
 
     $('.btn-success').click(function() {
-        reload_triggers($( "input#zenodo_token" ).val());
+        reload_triggers();
     });
 
     $('.submit').click(function() {
-        reload_triggers($( "input#zenodo_token" ).val());
+        reload_triggers();
     });
 
     split_uri();
     socket.emit('get_info', {
         repo: repo,
-        owner: owner,
-        token: null,
+        owner: owner
     });
 
 });

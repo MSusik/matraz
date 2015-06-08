@@ -1,7 +1,7 @@
 import requests
 
 
-def get_doi(repo_url, access_token):
+def get_doi(repo_url):
     '''Fetch doi from Zenodo, if available.
 
     Parameters
@@ -18,8 +18,12 @@ def get_doi(repo_url, access_token):
     :return: tuple
         (doi, link to doi service)
     '''
-    zenodo_url = "https://zenodo.org/api/deposit/depositions?access_token="
-    response = requests.get(zenodo_url + access_token)
+    zenodo_url = "https://zenodo.org/search"
+    params = {
+        "of": "recjson",
+        "p": repo_url
+    }
+    response = requests.get(zenodo_url, params=params)
 
     try:
         response.raise_for_status()
@@ -28,12 +32,7 @@ def get_doi(repo_url, access_token):
 
     content = response.json()
 
-    for upload in content:
-        try:
-            if any(x['identifier'].lower().startswith(repo_url.lower())
-                   for x in upload['metadata']['related_identifiers']):
-                return upload['doi'], upload['doi_url']
-        except KeyError:
-            pass
+    if content:
+        return content[0]["doi"], "http://dx.doi.org/" + content[0]["doi"]
 
     return '', ''

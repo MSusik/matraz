@@ -1,5 +1,5 @@
 {% macro table_row(name, id) -%}
-    <td><span class="fa fa-spinner circle-o-notch fa-2x fa-{{id}}" aria-hidden="true"></span></td>
+    <td><span class="fa fa-spinner fa-spin fa-2x fa-{{id}}" aria-hidden="true"></span></td>
     <td class="text-right"><big>{{name}}</big></td>
     <td><input type="text" class="form-control input-sm" id="{{id}}" disabled></td>
 {%- endmacro %}
@@ -29,18 +29,6 @@
                                     <h2 class="text-center">Get a badge for: <a href="http://www.github.com/{{owner}}/{{repo}}" target="_blank">{{owner}}/{{repo}}</a></h2>
 
                                     <br/>
-                                    <div class="well">
-                                        <h4>Copy here your Zenodo token:</h4>
-                                        <div class="input-group">
-                                            <input type="text" class="form-control input-sm" id="zenodo_token">
-                                            <span class="input-group-btn">
-                                            <button type="button" class="btn btn-sm btn-success submit">Submit</button>
-                                            </span>
-                                        </div>
-                                        <br/>
-                                        If you don't know what a token is or don't have a token yet, create a new one <a href="https://zenodo.org/account/settings/applications/tokens/new/" target="_blank"> here</a>
-                                    </div>
-
 
                                     <table class="table table-responsive borderless">
                                        <tbody>
@@ -82,7 +70,7 @@
 
                                     <p><big>Your badge will be stored here:</big></p>
                                     <div class="well">
-                                        <a href="{{ request.url }}/badge.svn">{{ request.url }}/badge.svn</a>
+                                        <a href="{{ request.url }}/matraz.svg">{{ request.url }}/matraz.svg</a>
                                     </div>
 
                                     <p/>

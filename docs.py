@@ -2,18 +2,28 @@ import sys
 import requests
 import re
 
+from utils import get_readme
+
 
 def has_docs(owner, repo, readme):
-    prefix = 'https://github.com/' + owner + '/' + repo + '/tree/master/'
+    url = 'https://api.github.com/repos/' + owner + '/' + repo + \
+        '/git/trees/master'
 
-    directories = re.compile('\W[Dd][Oo][Cc](([Ss])|([Uu][Mm][Ee][Nn][Tt][Aa][Tt][Ii][Oo][Nn]))?\W')
+    try:
+        response = requests.get(url)
+        response.raise_for_status()
+        response = response.json()
+        directories = re.compile('^[Dd][Oo][Cc](([Ss])|([Uu][Mm][Ee][Nn][Tt][Aa][Tt][Ii][Oo][Nn]))?$')
+        for path in response['tree']:
+            if "path" in path and directories.match(path["path"]):
+                return True
+    except requests.exceptions.RequestException:
+        pass
 
-    for suffix in affixes:
-        if detect_url(prefix + suffix):
-            return True
-
-    for regex in affixes:
-        if search_readme(readme, '### ' + regex + '\s'):
+    readme_re = re.compile('(# )?[Dd][Oo][Cc](([Ss])|([Uu][Mm][Ee][Nn][Tt][Aa][Tt][Ii][Oo][Nn]))?(\n[=-~])?')
+    match = readme_re.search(readme)
+    if match:
+        if match.groups()[0] or match.groups()[4]:
             return True
 
     return False

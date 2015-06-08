@@ -8,7 +8,8 @@ from contact import get_contact
 from docs import has_docs
 from doi import get_doi
 from license import get_license
-from utils import get_repo_info
+from svg import matraz_svg
+from utils import get_repo_info, get_readme
 
 
 app = Flask(__name__)
@@ -22,9 +23,21 @@ def index(owner, repo):
     return render_template('form.html', owner=owner, repo=repo)
 
 
+@app.route('/<owner>/<repo>/matraz.svg')
+def badge(owner, repo):
+    current_owner = db.session.query(Owner).filter_by(name=owner).first()
+    if current_owner:
+        old_repo = Repo.query.filter((Repo.name == repo) |
+                                     (Repo.owner_id ==
+                                      current_owner.id)).first()
+        if old_repo:
+            return matraz_svg(old_repo.license, old_repo.contact_info,
+                              old_repo.documentation, old_repo.doi)
+
+
 @socketio.on('get_info', namespace="/badge")
 def get_info(message):
-    # Message contains repo, owner, token keys
+    # Message contains repo, owner keys
     owner_name = message["owner"].lower()
     current_owner = db.session.query(Owner).filter_by(name=owner_name).first()
     repo_name = message["repo"].lower()
@@ -46,26 +59,28 @@ def get_info(message):
                 emit('info', return_message)
                 return
 
-    if message["token"] is None:
-        return
-
     readme = get_readme(message["owner"], message["repo"])
     repo_info = get_repo_info(message["owner"], message["repo"])
     return_message = {
-        "contact": get_contact(message["owner"], repo_info, readme),
+        "contact": get_contact(message["owner"], message["repo"], repo_info,
+                               readme),
         "license": get_license(message["owner"], repo_info),
         "doi": get_doi('https://github.com/%s/%s' % (message["owner"],
-                       message["repo"]), message["token"]),
+                       message["repo"])),
         "documentation": has_docs(message["owner"], message["repo"], readme)
     }
+
+    if current_owner:
+        old_repo = Repo.query.filter((Repo.name == repo_name) |
+                                     (Repo.owner_id ==
+                                      current_owner.id)).first()
+        if old_repo:
+            db.session.delete(old_repo)
 
     if not current_owner:
         current_owner = Owner(owner_name)
         db.session.add(current_owner)
 
-    old_repo = Repo.query.filter_by(name='python-orcid').first()
-    if old_repo:
-        db.session.delete(old_repo)
     current_repo = Repo(current_owner, repo_name,
                         return_message["documentation"],
                         return_message["doi"][0], return_message["doi"][0],

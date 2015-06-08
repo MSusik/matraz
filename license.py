@@ -65,5 +65,5 @@ def get_license(owner, repo_info):
 
     try:
         return repo_info['license']['name'], repo_info['license']['url']
-    except KeyError:
+    except (KeyError, TypeError):
         return '', ''
